@@ -1,4 +1,5 @@
-from os.path import exists
+from os import environ
+from os.path import exists, join
 import asyncio
 import time
 from bleak import BleakScanner, BleakClient, BleakError
@@ -11,10 +12,13 @@ parser.add_argument("-d", "--dryrun", action="store_true", help="Run the program
 args = parser.parse_args()
 
 saved_addrs = []
+saved_path = "htc_basestations.txt"
+if environ.get("XDG_CONFIG_HOME"):
+    saved_path = join(environ["XDG_CONFIG_HOME"], saved_path)
 
 if not args.save:
-    if exists("basestations.txt"):
-        r = open("basestations.txt", "r")
+    if exists(saved_path):
+        r = open(saved_path, "r")
         saved_addrs = r.read().split(" ")
         print("Loaded %d saved basestations" % len(saved_addrs))
 
@@ -80,7 +84,7 @@ async def main():
             quit()
         print("~~~")
         if args.save:
-            with open("basestations.txt", "w") as f:
+            with open(saved_path, "w") as f:
                 addresses = list([bs.address for bs in basestations])
                 f.write(" ".join(addresses))
                 print("Saved %d addresses" % len(addresses))
