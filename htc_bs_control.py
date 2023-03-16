@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 from os import environ
 from os.path import exists, join
 import asyncio
